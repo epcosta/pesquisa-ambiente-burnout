@@ -1,0 +1,464 @@
+/* ============================================================
+   CONFIGURAÇÃO DA PÁGINA
+============================================================ */
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+/* ============================================================
+   GRÁFICOS - CONFIGURAÇÃO NORMAL DA TELA
+============================================================ */
+
+.grafico-print {
+  display: none;
+}
+
+.grafico-print {
+  display: none;
+}
+/* ============================================================
+   CABEÇALHO DO RELATÓRIO
+============================================================ */
+
+.cabecalho-relatorio {
+  width: 100%;
+
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* ============================================================
+   RODAPÉ DO RELATÓRIO
+============================================================ */
+
+.rodape-relatorio {
+  width: 100%;
+
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+/* ============================================================
+   IMPRESSÃO
+============================================================ */
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body {
+    font-size: 10pt;
+  }
+
+  /* ==========================================================
+     ELEMENTOS DA APLICAÇÃO QUE NÃO DEVEM SER IMPRESSOS
+  ========================================================== */
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* ==========================================================
+     LAYOUT PRINCIPAL
+  ========================================================== */
+
+  .layout-content {
+    width: 100% !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* ==========================================================
+     DOCUMENTO
+  ========================================================== */
+
+  .relatorio {
+    width: 100% !important;
+    max-width: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: #ffffff !important;
+
+    box-shadow: none !important;
+  }
+
+  /* ==========================================================
+     CABEÇALHO DO RELATÓRIO
+  ========================================================== */
+
+  .cabecalho-relatorio {
+    width: 100% !important;
+
+    margin: 0 0 6mm 0 !important;
+
+    border-radius: 3mm !important;
+
+    background-color: #1e293b !important;
+
+    box-shadow: none !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /*
+   * Reduz o espaço interno do cabeçalho no PDF.
+   *
+   * No React estamos utilizando p-6 / md:p-8.
+   * Para impressão não precisamos de tanto espaço.
+   */
+
+  .cabecalho-relatorio > div {
+    padding: 5mm 6mm !important;
+  }
+
+  /* ==========================================================
+     INFORMAÇÕES DO CABEÇALHO
+     Pesquisa / Participantes
+  ========================================================== */
+
+  .cabecalho-relatorio-info {
+    flex-shrink: 0 !important;
+
+    font-size: 8pt !important;
+
+    line-height: 1.3 !important;
+  }
+
+  /* ==========================================================
+     RODAPÉ DO RELATÓRIO
+  ========================================================== */
+
+  .rodape-relatorio {
+    width: 100% !important;
+
+    margin-top: 8mm !important;
+
+    padding-top: 3mm !important;
+
+    border-top: 0.3mm solid #cbd5e1 !important;
+
+    font-size: 7.5pt !important;
+
+    line-height: 1.3 !important;
+
+    color: #94a3b8 !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /*
+   * Mantém os dois lados do rodapé separados:
+   *
+   * Relatório...                       Pesquisa #3
+   */
+
+  .rodape-relatorio > div {
+    width: 100% !important;
+
+    display: flex !important;
+
+    align-items: center !important;
+
+    justify-content: space-between !important;
+
+    gap: 5mm !important;
+  }
+
+  /*
+   * Evita quebra de linha em "Pesquisa #3"
+   */
+
+  .rodape-relatorio span:last-child {
+    flex-shrink: 0 !important;
+
+    white-space: nowrap !important;
+  }
+
+  /* ==========================================================
+     LEGENDA PES-NWI
+  ========================================================== */
+
+  .legenda-pesnwi {
+    margin-top: 6mm !important;
+    margin-bottom: 4mm !important;
+  }
+
+  /* ==========================================================
+     CARACTERÍSTICAS DOS PARTICIPANTES
+  ========================================================== */
+
+  .caracteristicas-grid {
+    display: grid !important;
+
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+    column-gap: 5mm !important;
+    row-gap: 4mm !important;
+  }
+
+  .tabela-caracteristicas {
+    margin: 0 !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .tabela-caracteristicas table {
+    width: 100% !important;
+
+    font-size: 7.5pt !important;
+  }
+
+  .tabela-caracteristicas th,
+  .tabela-caracteristicas td {
+    padding: 2px 5px !important;
+
+    line-height: 1.2 !important;
+  }
+
+  /* ==========================================================
+     CONTROLE DE PAGINAÇÃO
+  ========================================================== */
+
+  /*
+   * Mantém o elemento junto com o próximo.
+   *
+   * Utilizado principalmente em títulos.
+   */
+
+  .print-keep-with-next {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /*
+   * Não dividir o elemento entre duas páginas.
+   */
+
+  .print-avoid-break {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /*
+   * Força uma nova página.
+   */
+
+  .print-page-break {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /*
+   * Evita que títulos fiquem sozinhos
+   * no final da página.
+   */
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+  }
+
+  /* ==========================================================
+     TABELAS GERAIS
+  ========================================================== */
+
+  .relatorio .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .relatorio table {
+    width: 100% !important;
+    max-width: 100% !important;
+
+    border-collapse: collapse !important;
+
+    font-size: 8pt !important;
+  }
+
+  .relatorio th,
+  .relatorio td {
+    padding: 3px 4px !important;
+  }
+
+  /*
+   * Repete o cabeçalho da tabela caso
+   * ela ocupe mais de uma página.
+   */
+
+  .relatorio thead {
+    display: table-header-group;
+  }
+
+  /*
+   * Uma linha da tabela não deve ser
+   * dividida entre duas páginas.
+   */
+
+  .relatorio tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* ==========================================================
+     TABELAS DE CRUZAMENTO PES-NWI
+  ========================================================== */
+
+  .tabela-pesnwi {
+    width: 100% !important;
+
+    overflow: visible !important;
+  }
+
+  .tabela-pesnwi-scroll {
+    width: 100% !important;
+
+    overflow: visible !important;
+  }
+
+  .tabela-pesnwi-table {
+    width: 100% !important;
+
+    /*
+     * Sobrescreve o min-w-275 do Tailwind.
+     */
+
+    min-width: 0 !important;
+
+    table-layout: fixed !important;
+
+    font-size: 7pt !important;
+  }
+
+  .tabela-pesnwi-table th,
+  .tabela-pesnwi-table td {
+    padding: 3px 2px !important;
+
+    white-space: normal !important;
+
+    overflow-wrap: anywhere;
+
+    line-height: 1.15;
+  }
+
+  /*
+   * Primeira coluna recebe mais espaço.
+   */
+
+  .tabela-pesnwi-table .tabela-col-caracteristica {
+    width: 15% !important;
+  }
+
+  /*
+   * Participantes.
+   */
+
+  .tabela-pesnwi-table .tabela-col-participantes {
+    width: 8% !important;
+  }
+
+  /*
+   * Cabeçalhos das dimensões.
+   */
+
+  .tabela-pesnwi-table .tabela-col-dimensao {
+    font-size: 6.5pt !important;
+
+    font-weight: 600;
+  }
+
+  /* ==========================================================
+     GRÁFICO PES-NWI
+  ========================================================== */
+
+  .grafico-pesnwi {
+    width: 100% !important;
+
+    box-shadow: none !important;
+  }
+
+  .grafico-pesnwi-area {
+    width: 100% !important;
+
+    min-width: 0 !important;
+  }
+
+  .grafico-pesnwi .recharts-responsive-container {
+    width: 100% !important;
+  }
+
+  /* ==========================================================
+     GRÁFICOS
+  ========================================================== */
+
+  /*
+   * Durante a impressão escondemos a versão
+   * responsiva dos gráficos.
+   */
+
+  .grafico-screen {
+    display: none !important;
+  }
+
+  /*
+   * Mostra a versão criada especificamente
+   * para impressão.
+   */
+
+  .grafico-print {
+    display: block !important;
+
+    width: 700px !important;
+
+    margin: 0 auto !important;
+  }
+
+  .grafico-print svg {
+    display: block !important;
+
+    overflow: visible !important;
+  }
+
+  /* ==========================================================
+     CORES
+  ========================================================== */
+
+  /*
+   * Muito importante para:
+   *
+   * - cabeçalho
+   * - cards
+   * - tabelas
+   * - gráficos
+   * - legendas
+   *
+   * Evita que o navegador tente economizar tinta
+   * removendo fundos e cores.
+   */
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

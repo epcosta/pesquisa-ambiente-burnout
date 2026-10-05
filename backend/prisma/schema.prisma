@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  
+}
+
+model Instituicoes {
+  id Int @id @default(autoincrement())
+  ds_instituicao String? @db.VarChar(150)
+  razao_social String @db.VarChar(150)
+  nome_fantasia String? @db.VarChar(120)
+  cnpj String? @db.Char(14)
+  logradouro String? @db.VarChar(150)
+  nro String? @db.VarChar(20)
+  complemento String? @db.VarChar(100)
+  bairro String? @db.VarChar(100)
+  cidade String? @db.VarChar(100)
+  uf String? @db.VarChar(2)
+  cep String? @db.VarChar(10)
+  nro_funcionarios Int?
+  dt_alteracao DateTime? @db.Date
+  dt_cadastro DateTime? @db.Date  
+  pesquisas PesquisaAmbienteBurnout[]
+  @@map("instituicoes")
+}
+
+model PesquisaAmbienteBurnout {
+  id Int @id @default(autoincrement())
+  dt_cadastro_pesquisa DateTime? @db.Date
+  nm_responsavel String? @db.VarChar(80)
+  email_responsavel String? @db.VarChar(100)
+  ddd_responsavel String? @db.Char(2)
+  fone_responsavel String? @db.VarChar(20)
+  cargo_responsavel String? @db.VarChar(50)
+  nro_funcionarios Int?
+  dt_inicio_pesquisa DateTime? @db.Date
+  dt_fechamento_pesquisa DateTime? @db.Date
+  fechado String? @db.Char(1)
+  nome_arte String? @db.VarChar(200)
+  nome_arte_original String? @db.VarChar(200)
+  id_area_instituicao Int?
+  id_instituicoes Int
+  instituicao Instituicoes @relation(fields:[id_instituicoes], references:[id])
+  questionarios QuestionarioAmbienteBurnout[]
+  @@index([id_instituicoes])
+  @@map("pesquisa_ambiente_burnout")
+}
+
+model QuestionarioAmbienteBurnout {
+  id Int @id @default(autoincrement())
+  dt_cadastro_pesquisa DateTime? @db.Date
+  inf_perfil Int?
+  inf_tempo_formacao_area_enfermagem Int?
+  inf_titulo_graduacao Int?
+  inf_cargo_enfermeiro Int?
+  inf_cargo_tecnico Int?
+  inf_tempo_trabalho_instituicao Int?
+  inf_tempo_trabalho_cargo Int?
+  inf_area_trabalho Int?
+  inf_escala_trabalho Int?
+  inf_turno_trabalho Int?
+  inf_outro_vinculo Int?
+  pesnwi_01 Int?
+  pesnwi_02 Int?
+  pesnwi_03 Int?
+  pesnwi_04 Int?
+  pesnwi_05 Int?
+  pesnwi_06 Int?
+  pesnwi_07 Int?
+  pesnwi_08 Int?
+  pesnwi_09 Int?
+  pesnwi_10 Int?
+  pesnwi_11 Int?
+  pesnwi_12 Int?
+  pesnwi_13 Int?
+  pesnwi_14 Int?
+  pesnwi_15 Int?
+  pesnwi_16 Int?
+  pesnwi_17 Int?
+  pesnwi_18 Int?
+  pesnwi_19 Int?
+  pesnwi_20 Int?
+  pesnwi_21 Int?
+  pesnwi_22 Int?
+  pesnwi_23 Int?
+  pesnwi_24 Int?
+  pesnwi_25 Int?
+  pesnwi_26 Int?
+  pesnwi_27 Int?
+  pesnwi_28 Int?
+  pesnwi_29 Int?
+  pesnwi_30 Int?
+  pesnwi_31 Int?
+  burnout_01 Int?
+  burnout_02 Int?
+  burnout_03 Int?
+  burnout_04 Int?
+  burnout_05 Int?
+  burnout_06 Int?
+  burnout_07 Int?
+  burnout_08 Int?
+  burnout_09 Int?
+  burnout_10 Int?
+  burnout_11 Int?
+  burnout_12 Int?
+  burnout_13 Int?
+  burnout_14 Int?
+  burnout_15 Int?
+  burnout_16 Int?
+  burnout_17 Int?
+  burnout_18 Int?
+  burnout_19 Int?
+  burnout_20 Int?
+  burnout_21 Int?
+  burnout_22 Int?
+  id_pesquisa_ambiente_burnout Int
+  pesquisa PesquisaAmbienteBurnout @relation(fields:[id_pesquisa_ambiente_burnout], references:[id])
+  @@index([id_pesquisa_ambiente_burnout])
+  @@map("questionario_ambiente_burnout")
+}
+
+model DimensaoAmbiente {
+ id Int @id @default(autoincrement())
+ ds_dimensao String? @db.VarChar(80)
+ perguntas PesquisaAmbienteDimensao[]
+ @@map("dimensoes_ambiente")
+}
+model PesquisaAmbienteDimensao {
+ id Int @id @default(autoincrement())
+ pergunta String? @db.VarChar(20)
+ id_dimensoes_ambiente Int
+ dimensao DimensaoAmbiente @relation(fields:[id_dimensoes_ambiente], references:[id])
+ @@index([id_dimensoes_ambiente])
+ @@map("pesquisa_ambiente_dimensoes")
+}
+model DimensaoBurnout {
+ id Int @id @default(autoincrement())
+ ds_dimensao String? @db.VarChar(45)
+ perguntas PesquisaBurnoutDimensao[]
+ @@map("dimensoes_burnout")
+}
+model PesquisaBurnoutDimensao {
+ id Int @id @default(autoincrement())
+ pergunta String? @db.VarChar(20)
+ id_dimensoes_burnout Int
+ dimensao DimensaoBurnout @relation(fields:[id_dimensoes_burnout], references:[id])
+ @@index([id_dimensoes_burnout])
+ @@map("pesquisa_burnout_dimensoes")
+}
+model TabelaDDD {
+  id Int @id @default(autoincrement())
+  ddd String @db.VarChar(3)
+  @@map("tabela_ddd")
+}
