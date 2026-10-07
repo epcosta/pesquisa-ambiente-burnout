@@ -88,12 +88,52 @@ export async function criarQuestionario(req: Request, res: Response) {
     });
   }
 }
-
 //###############################################################################
 export async function listarPorPesquisa(req: Request, res: Response) {
-  const id = Number(req.params.id);
-  const data = await prisma.questionarioAmbienteBurnout.findMany({
-    where: { id_pesquisa_ambiente_burnout: id },
-  });
-  res.json(data);
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({
+        msg: "Pesquisa inválida.",
+      });
+    }
+
+    const pesquisa = await prisma.pesquisaAmbienteBurnout.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!pesquisa) {
+      return res.status(404).json({
+        msg: "Pesquisa não encontrada.",
+      });
+    }
+
+    const data = await prisma.questionarioAmbienteBurnout.findMany({
+      where: {
+        id_pesquisa_ambiente_burnout: id,
+      },
+
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    if (data.length === 0) {
+      return res.status(404).json({
+        msg: "Não existem questionários respondidos para esta pesquisa.",
+      });
+    }
+
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error("Erro ao listar questionários da pesquisa:", error);
+
+    return res.status(500).json({
+      msg: "Erro ao listar questionários da pesquisa.",
+      error: String(error),
+    });
+  }
 }

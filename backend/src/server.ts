@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger.js";
 
 import { router } from "./routes/index.js";
 import { prisma } from "./lib/prisma.js";
@@ -14,6 +16,8 @@ app.use(
 );
 app.use(express.json({ limit: "10mb" }));
 app.use("/api", router);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use((_req, res) => res.status(404).json({ msg: "Rota não encontrada" }));
 
 async function startServer() {

@@ -1,32 +1,7 @@
 /*
 |--------------------------------------------------------------------------
-| Serviço de cálculo do relatório Ambiente de Trabalho e Burnout
+| Tipos gerais
 |--------------------------------------------------------------------------
-|
-| Organização do arquivo:
-| 1. Tipos compartilhados
-| 2. Utilitários estatísticos e de normalização
-| 3. Características dos participantes
-| 4. Burnout
-| 5. PES-NWI / Ambiente de trabalho
-| 6. Composição do relatório completo
-|
-| A organização por funcionalidade mantém, em cada bloco, os tipos,
-| configurações e funções que trabalham juntos. Isso facilita localizar
-| regras de negócio e reduz a necessidade de navegar pelo arquivo inteiro.
-|
-*/
-
-
-/*
-|--------------------------------------------------------------------------
-| 1. TIPOS COMPARTILHADOS
-|--------------------------------------------------------------------------
-|
-| Estes tipos representam estruturas usadas por mais de uma função do
-| relatório. Eles ficam no início porque definem o "vocabulário" dos
-| cálculos realizados nos blocos seguintes.
-|
 */
 
 export type Nivel = "baixo" | "medio" | "alto";
@@ -71,13 +46,8 @@ export type ItemCruzamentoBurnout = {
 
 /*
 |--------------------------------------------------------------------------
-| 2. UTILITÁRIOS ESTATÍSTICOS E DE NORMALIZAÇÃO
+| Funções estatísticas
 |--------------------------------------------------------------------------
-|
-| Funções pequenas e reutilizáveis usadas pelos cálculos de características,
-| Burnout e PES-NWI. Centralizá-las evita repetir regras como percentual,
-| média, desvio-padrão e conversão segura para número.
-|
 */
 
 export function percentual(quantidade: number, total: number): number {
@@ -114,6 +84,12 @@ export function desvioPadrao(valores: number[]): number {
   return Number(Math.sqrt(variancia).toFixed(2));
 }
 
+/*
+|--------------------------------------------------------------------------
+| Funções auxiliares
+|--------------------------------------------------------------------------
+*/
+
 function numero(valor: unknown): number {
   const resultado = Number(valor);
 
@@ -134,13 +110,8 @@ function incrementar(distribuicao: Distribuicao, nivel: Nivel) {
 
 /*
 |--------------------------------------------------------------------------
-| 3. CARACTERÍSTICAS DOS PARTICIPANTES
+| Configuração das características
 |--------------------------------------------------------------------------
-|
-| Este bloco transforma os códigos gravados no questionário em grupos
-| legíveis para o relatório (perfil, tempo de formação, área, turno etc.).
-| As constantes abaixo são as tabelas de domínio usadas nesses agrupamentos.
-|
 */
 
 const PERFIL: OpcaoAgrupamento[] = [
@@ -444,16 +415,10 @@ function obterFormacaoComplementar(resposta: any): number {
 
   return 0;
 }
-
 /*
 |--------------------------------------------------------------------------
-| Agrupamento das características
+| Agrupamentos das características
 |--------------------------------------------------------------------------
-|
-| agruparCampo() concentra a regra comum de contar respostas de uma opção
-| e calcular seu percentual. Assim, calcularCaracteristicas() apenas declara
-| quais campos do questionário devem ser agrupados e quais opções utilizar.
-|
 */
 
 function agruparCampo(
@@ -482,12 +447,8 @@ function agruparCampo(
 
 /*
 |--------------------------------------------------------------------------
-| Resultado das características
+| Características dos participantes
 |--------------------------------------------------------------------------
-|
-| Função pública deste bloco. Monta todos os agrupamentos demográficos e
-| profissionais que serão incorporados ao relatório final.
-|
 */
 
 export function calcularCaracteristicas(respostas: any[]) {
@@ -534,13 +495,14 @@ export function calcularCaracteristicas(respostas: any[]) {
 
 /*
 |--------------------------------------------------------------------------
-| 4. BURNOUT
+| BURNOUT
 |--------------------------------------------------------------------------
-|
-| Este bloco contém toda a regra do Burnout: composição das dimensões,
-| cálculo das pontuações, classificação em baixo/médio/alto, cruzamentos
-| com características dos participantes e montagem do resultado final.
-|
+*/
+
+/*
+|--------------------------------------------------------------------------
+| Perguntas por dimensão
+|--------------------------------------------------------------------------
 */
 
 const QUESTOES_EXAUSTAO = [
@@ -898,13 +860,8 @@ export function calcularDadosBurnout(respostas: any[]) {
 
 /*
 |--------------------------------------------------------------------------
-| 5. PES-NWI / AMBIENTE DE TRABALHO
+| PES-NWI
 |--------------------------------------------------------------------------
-|
-| Este bloco calcula os indicadores do ambiente de prática profissional:
-| média e desvio-padrão por pergunta e dimensão, resultados por formação
-| profissional e cruzamentos com as características dos participantes.
-|
 */
 
 type CampoPesNwi = `pesnwi_${string}`;
@@ -1329,12 +1286,10 @@ export function calcularDadosAmbiente(respostas: any[]) {
 
 /*
 |--------------------------------------------------------------------------
-| 6. RELATÓRIO COMPLETO
+| Relatório completo
 |--------------------------------------------------------------------------
 |
-| Ponto de entrada do serviço. O controller precisa chamar somente esta
-| função; ela coordena os três blocos do relatório sem duplicar cálculos
-| ou regras de negócio no controller.
+| Esta será a função principal chamada pelo controller.
 |
 */
 

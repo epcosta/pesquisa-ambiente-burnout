@@ -22,6 +22,7 @@ export async function listarPesquisas(_req: Request, res: Response) {
         id: "desc",
       },
     });
+    console.log(data);
 
     const pesquisas = data.map((pesquisa) => ({
       ...pesquisa,
