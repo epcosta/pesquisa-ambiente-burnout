@@ -1,0 +1,27 @@
+FROM node:24-bookworm
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm ci
+
+# Dependências e navegador Chromium
+RUN npx playwright install --with-deps chromium
+
+COPY . .
+
+# Gera o Prisma Client
+#RUN npx prisma generate
+# DATABASE_URL temporária somente para o build
+RUN DATABASE_URL="mysql://build:build@localhost:3306/build" npx prisma generate
+
+# Compila TypeScript
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright
+
+EXPOSE 3500
+
+CMD ["npm", "start"]

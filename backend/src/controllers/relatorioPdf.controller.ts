@@ -15,13 +15,10 @@ export const gerarRelatorioPdf = async (req: Request, res: Response) => {
       return;
     }
 
-    /*
-     * URL do FRONTEND.
-     *
-     * O Playwright vai abrir exatamente o relatório
-     * React que já criamos.
-     */
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendUrl =
+      process.env.FRONTEND_INTERNAL_URL ??
+      process.env.FRONTEND_URL ??
+      "http://localhost:5173";
 
     const urlRelatorio = `${frontendUrl}/relatorio/${id}`;
 
@@ -41,30 +38,53 @@ export const gerarRelatorioPdf = async (req: Request, res: Response) => {
       },
     });
 
+    page.on("console", (msg) => {
+      console.log("BROWSER:", msg.type(), msg.text());
+    });
+
+    page.on("pageerror", (error) => {
+      console.error("BROWSER ERROR:", error.message);
+    });
+
+    page.on("requestfailed", (request) => {
+      console.error(
+        "REQUEST FAILED:",
+        request.url(),
+        request.failure()?.errorText,
+      );
+    });
+
+    page.on("response", (response) => {
+      if (!response.ok()) {
+        console.error("HTTP ERROR:", response.status(), response.url());
+      }
+    });
+
     /*
      * Abre a página React.
      */
-    await page.goto(urlRelatorio, {
-      waitUntil: "networkidle",
-      timeout: 60000,
-    });
 
-    /*
-     * Espera o relatório existir.
-     *
-     * Seu Relatorio.tsx possui:
-     *
-     * id="relatorio"
-     */
+    console.log(`Gerando PDF do relatório: ${frontendUrl}/relatorio/${id}`);
+
+    const response = await page.goto(`${frontendUrl}/relatorio/${id}`, {
+      waitUntil: "networkidle",
+      timeout: 30000,
+    });
+    console.log("STATUS:", response?.status());
+    console.log("URL:", page.url());
+
+    await page.waitForTimeout(2000);
+
+    console.log("CONTEÚDO DA PÁGINA:");
+    console.log(await page.locator("body").innerText());
+
+    console.log("EXISTE #relatorio:", await page.locator("#relatorio").count());
+
     await page.waitForSelector("#relatorio", {
       state: "visible",
-      timeout: 60000,
+      timeout: 10000,
     });
 
-    /*
-     * Garante que fontes carregadas pela página
-     * estejam prontas antes do PDF.
-     */
     await page.evaluate(async () => {
       await document.fonts.ready;
     });
@@ -75,14 +95,6 @@ export const gerarRelatorioPdf = async (req: Request, res: Response) => {
     await page.emulateMedia({
       media: "print",
     });
-
-    /*
-     * Dados usados no cabeçalho.
-     *
-     * Inicialmente usaremos o ID.
-     * Depois podemos passar também instituição
-     * e participantes.
-     */
 
     const pdf = await page.pdf({
       format: "A4",

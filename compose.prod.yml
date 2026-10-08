@@ -1,0 +1,74 @@
+name: ambiente-burnout-prod
+
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+    volumes:
+      - mysql_data_prod:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h 127.0.0.1 -u root --silent",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+
+    restart: unless-stopped
+
+    environment:
+      NODE_ENV: production
+      PORT: 3500
+
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DATABASE_NAME: ${MYSQL_DATABASE}
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+
+      FRONTEND_URL: http://localhost:8080
+      FRONTEND_INTERNAL_URL: http://frontend
+      API_URL: http://localhost:3500/api
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_URL: /api
+
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:8080:80"
+
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data_prod:

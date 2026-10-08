@@ -10,27 +10,24 @@ import GraficoBurnoutCruzamento from "../components/relatorio/GraficoBurnoutCruz
 import TabelaCruzamentoPesNwi from "../components/relatorio/TabelaCruzamentoPesNwi";
 import GraficoPesNwi from "../components/relatorio/GraficoPesNwi";
 import { SecaoRelatorio } from "../components/relatorio/SecaoRelatorio";
-
 import "../styles/relatorio-print.css";
-
 import type { RelatorioType, DimensaoBurnout } from "../types/Relatorio";
+import PdfModal from "../components/PdfModal";
+
+PdfModal;
 
 function Relatorio() {
   const { id } = useParams();
-
   const navigate = useNavigate();
-
   const [relatorio, setRelatorio] = useState<RelatorioType | null>(null);
-
   const [carregando, setCarregando] = useState(true);
-
   const [erro, setErro] = useState("");
-
-  /*
-  |--------------------------------------------------------------------------
-  | Busca relatório
-  |--------------------------------------------------------------------------
-  */
+  const [modalPdfAberto, setModalPdfAberto] = useState(false);
+  const [pesquisaPdfId, setPesquisaPdfId] = useState<number | null>(null);
+  function visualizarPdf(id: number) {
+    setPesquisaPdfId(id);
+    setModalPdfAberto(true);
+  }
 
   useEffect(() => {
     async function buscarRelatorio() {
@@ -65,12 +62,6 @@ function Relatorio() {
     }
   }, [id]);
 
-  /*
-  |--------------------------------------------------------------------------
-  | Loading
-  |--------------------------------------------------------------------------
-  */
-
   if (carregando) {
     return (
       <div className="flex min-h-100 items-center justify-center">
@@ -79,12 +70,6 @@ function Relatorio() {
     );
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Erro
-  |--------------------------------------------------------------------------
-  */
-
   if (erro || !relatorio) {
     return (
       <div className="mx-auto mt-10 max-w-4xl rounded-lg border border-red-200 bg-red-50 p-5 text-red-700">
@@ -92,12 +77,6 @@ function Relatorio() {
       </div>
     );
   }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Sem participantes
-  |--------------------------------------------------------------------------
-  */
 
   if (relatorio.participantes === 0) {
     return (
@@ -115,27 +94,16 @@ function Relatorio() {
     );
   }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Dados do relatório
-  |--------------------------------------------------------------------------
-  */
-
   const { pesquisa, instituicao, caracteristicas, ambiente, burnout } =
     relatorio;
-
-  /*
-  |--------------------------------------------------------------------------
-  | Gerar PDF
-  |--------------------------------------------------------------------------
-  */
 
   function gerarPdf() {
     if (!id) return;
 
     const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
-    window.open(`${apiUrl}/relatorios/${id}/pdf`, "_blank");
+    //window.open(`${apiUrl}/relatorios/${id}/pdf`, "_blank");
+    visualizarPdf(Number(id));
   }
 
   /*
@@ -610,6 +578,16 @@ function Relatorio() {
           </div>
         </SecaoRelatorio>
       </div>
+      {pesquisaPdfId !== null && (
+        <PdfModal
+          open={modalPdfAberto}
+          pesquisaId={pesquisaPdfId}
+          onClose={() => {
+            setModalPdfAberto(false);
+            setPesquisaPdfId(null);
+          }}
+        />
+      )}
     </main>
   );
 }

@@ -20,7 +20,7 @@ const router = createBrowserRouter([
       { path: "/ambienteburnout/qrcode/:id", element: <VisualizarQrCode /> },
 
       { path: "/questionario-ambienteburnout/:id", element: <Questionario /> },
-      { path: "/relatorio/:id", element: <Relatorio /> },
+
       { path: "/obrigado", element: <Obrigado /> },
       { path: "/relatorio/:id", element: <Relatorio /> },
     ],

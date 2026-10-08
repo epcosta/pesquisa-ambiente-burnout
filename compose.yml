@@ -1,0 +1,95 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ambiente-burnout-mysql
+
+    restart: unless-stopped
+
+    ports:
+      - "3307:3306"
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-uroot",
+          "-p${MYSQL_ROOT_PASSWORD}",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ambiente-burnout-backend
+    restart: unless-stopped
+    ports:
+      - "3500:3500"
+
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      DATABASE_NAME: ${MYSQL_DATABASE}
+      DATABASE_URL: mysql://root:${MYSQL_ROOT_PASSWORD}@mysql:3306/${MYSQL_DATABASE}
+
+      # Usado pelo navegador do usuário
+      FRONTEND_URL: http://localhost:5173
+
+      # Usado pelo Playwright dentro do Docker
+      FRONTEND_INTERNAL_URL: http://frontend:5173
+
+      API_URL: http://localhost:3500/api
+
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SMTP_FROM: ${SMTP_FROM}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: ambiente-burnout-frontend
+    restart: unless-stopped
+
+    ports:
+      - "5173:5173"
+
+    environment:
+      VITE_API_URL: http://localhost:3500/api
+      VITE_APP_URL: http://localhost:5173
+
+    depends_on:
+      - backend
+
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+    command: npm run dev -- --host 0.0.0.0
+volumes:
+  mysql_data:

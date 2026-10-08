@@ -7,10 +7,15 @@ import { swaggerSpec } from "./swagger.js";
 import { router } from "./routes/index.js";
 import { prisma } from "./lib/prisma.js";
 const app = express();
-const port = Number(process.env.PORT ?? 3000);
+const port = Number(process.env.PORT ?? 3500);
+const allowedOrigins = [
+  process.env.FRONTEND_URL ?? "http://localhost:5173",
+  process.env.FRONTEND_INTERNAL_URL ?? "http://frontend:5173",
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
